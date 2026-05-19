@@ -27,6 +27,10 @@ model Page {
   singaporeLeadership singaporeleadership[]
   strategicObjectives strategicobjectives[]
   contactUs           contactus[]
+
+  ourPartnerMainBanner    ourpartnermainbanner?
+  ourPartnerBankPartners  ourpartnerbankpartners?
+  ourPartnerOtherPartners ourpartnerotherpartners?
 }
 
 model User {
@@ -204,4 +208,48 @@ model contactus {
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, title])
+}
+
+model ourpartnermainbanner {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String? @db.Text
+  imageURL    String
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model ourpartnerbankpartners {
+  id     Int                          @id @default(autoincrement())
+  title  String
+  images ourpartnerbankpartnerimage[]
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model ourpartnerbankpartnerimage {
+  id       Int    @id @default(autoincrement())
+  imageURL String
+
+  sectionId Int
+  section   ourpartnerbankpartners @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}
+
+model ourpartnerotherpartners {
+  id     Int                           @id @default(autoincrement())
+  title  String
+  images ourpartnerotherpartnerimage[]
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model ourpartnerotherpartnerimage {
+  id       Int    @id @default(autoincrement())
+  imageURL String
+
+  sectionId Int
+  section   ourpartnerotherpartners @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 }

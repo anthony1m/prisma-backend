@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const prisma = require("../utils/prisma");
+const userRepository = require("../repositories/user.repository");
 
 function createError(message, statusCode) {
   const error = new Error(message);
@@ -46,17 +46,7 @@ async function getAuthenticatedUser(req) {
     throw createError("Invalid authentication token", 401);
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: payload.userId,
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-    },
-  });
+  const user = await userRepository.findPublicById(payload.userId);
 
   if (!user) {
     throw createError("User not found", 401);

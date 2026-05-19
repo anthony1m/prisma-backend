@@ -1,6 +1,7 @@
 require("dotenv/config");
 
-const prisma = require("../utils/prisma");
+const databaseRepository = require("../repositories/database.repository");
+const userRepository = require("../repositories/user.repository");
 
 async function main() {
   const email = process.argv[2];
@@ -12,20 +13,7 @@ async function main() {
     return;
   }
 
-  const user = await prisma.user.update({
-    where: {
-      email,
-    },
-    data: {
-      role: "ADMIN",
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-    },
-  });
+  const user = await userRepository.makeAdminByEmail(email);
 
   console.log("User updated:");
   console.log(user);
@@ -43,5 +31,5 @@ main()
     process.exitCode = 1;
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await databaseRepository.disconnect();
   });

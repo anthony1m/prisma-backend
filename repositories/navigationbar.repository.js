@@ -1,0 +1,31 @@
+const prisma = require("../utils/prisma");
+
+function getNavigationbar() {
+  return prisma.navigationbar.findUnique({
+    where: {
+      id: 1,
+    },
+  });
+}
+
+function upsertNavigationbar(data) {
+  return prisma.navigationbar.upsert({
+    where: {
+      id: 1,
+    },
+    update: {
+      button: data.button,
+      imageURL: data.imageURL,
+    },
+    create: {
+      id: 1,
+      button: data.button,
+      imageURL: data.imageURL,
+    },
+  });
+}
+
+module.exports = {
+  getNavigationbar,
+  upsertNavigationbar,
+};

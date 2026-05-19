@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { requireAdminForPost } = require("../middlewares/auth.middleware");
 
 router.use("/auth", require("./auth.routes"));
+router.use("/contact-message", require("./contactMessage.routes"));
 router.use(requireAdminForPost);
 router.use("/pages", require("./page.routes"));
 router.use("/main-banners", require("./mainBanner.routes"));
@@ -24,4 +25,10 @@ router.use("/contact-us", require("./contactUs.routes"));
 router.use("/contactus-main-banner", require("./contactUsMainBanner.routes"));
 router.use("/contactus-singapore", require("./contactUsSingapore.routes"));
 router.use("/contactus-senegal", require("./contactUsSenegal.routes"));
+router.use("/our-partner", require("./ourPartner.routes"));
+router.use("/our-partner-main-banner", require("./ourPartnerMainBanner.routes"));
+router.use("/our-partner-bank-partners", require("./ourPartnerBankPartners.routes"));
+router.use("/our-partner-other-partners", require("./ourPartnerOtherPartners.routes"));
+router.use("/our-partner-section-one", require("./ourPartnerBankPartners.routes"));
+router.use("/our-partner-section-two", require("./ourPartnerOtherPartners.routes"));
 module.exports = router;
