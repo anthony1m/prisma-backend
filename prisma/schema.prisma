@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Page {
+  id    Int    @id @default(autoincrement())
+  title String @unique
+
+  mainBanner   mainbanner?
+  whoWeAre     whoweare?
+  mission      ourmission?
+  groupMission groupmission?
+
+  homeTeamMembers hometeammember[]
+  services        ourservices[]
+
+  aboutUsBanner     aboutusbanner?
+  groupHistory      grouphistory?
+  strategicPresence strategicpresence?
+
+  theExpansion        theexpansion[]
+  ourValues           ourvalues[]
+  singaporeLeadership singaporeleadership[]
+  strategicObjectives strategicobjectives[]
+  contactUs           contactus[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model homefooter {
+  id          Int    @id @default(1)
+  title       String
+  description String
+  imageURL    String
+}
+
+model navigationbar {
+  id       Int    @id @default(1)
+  imageURL String
+  button   String
+}
+
+model mainbanner {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  imageURL    String
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model whoweare {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  imageURL    String
+  button      String
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model ourmission {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  imageURL    String
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model groupmission {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  imageURL    String
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model ourservices {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  imageURL    String
+
+  pageId Int
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, title])
+}
+
+model hometeammember {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  imageURL    String
+
+  pageId Int
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, title])
+}
+
+model aboutusbanner {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  imageURL    String
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model grouphistory {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String @db.Text
+  imageURL    String
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model strategicpresence {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String @db.Text
+  imageURL    String
+
+  pageId Int  @unique
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model theexpansion {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String  @db.Text
+  imageURL    String?
+
+  pageId Int
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, title])
+}
+
+model ourvalues {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String? @db.Text
+
+  pageId Int
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, title])
+}
+
+model singaporeleadership {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String @db.Text
+  imageURL    String
+
+  pageId Int
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, title])
+}
+
+model strategicobjectives {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String @db.Text
+  imageURL    String
+
+  pageId Int
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, title])
+}
+
+model contactus {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String? @db.Text
+  imageURL    String?
+
+  pageId Int
+  page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, title])
+}

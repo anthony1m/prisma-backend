@@ -1,0 +1,27 @@
+const router = require("express").Router();
+const { requireAdminForPost } = require("../middlewares/auth.middleware");
+
+router.use("/auth", require("./auth.routes"));
+router.use(requireAdminForPost);
+router.use("/pages", require("./page.routes"));
+router.use("/main-banners", require("./mainBanner.routes"));
+router.use("/who-we-are", require("./whoWeAre.routes"));
+router.use("/services", require("./service.routes"));
+router.use("/missions", require("./mission.routes"));
+router.use("/navigationbar", require("./navigationbar.routes"));
+router.use("/group-missions", require("./groupMission.routes"));
+router.use("/home-footer", require("./homeFooter.routes"));
+router.use("/team-members", require("./teamMember.routes"));
+router.use("/about-us-banners", require("./aboutUsBanner.routes"));
+router.use("/the-expansions", require("./theExpansion.routes"));
+router.use("/our-values", require("./ourValues.routes"));
+router.use("/group-history", require("./groupHistory.routes"));
+router.use("/strategic-presence", require("./strategicPresence.routes"));
+router.use("/singapore-leadership", require("./singaporeLeadership.routes"));
+router.use("/strategic-objectives", require("./strategicObjectives.routes"));
+router.use("/home", require("./home.routes"));
+router.use("/contact-us", require("./contactUs.routes"));
+router.use("/contactus-main-banner", require("./contactUsMainBanner.routes"));
+router.use("/contactus-singapore", require("./contactUsSingapore.routes"));
+router.use("/contactus-senegal", require("./contactUsSenegal.routes"));
+module.exports = router;
