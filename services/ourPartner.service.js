@@ -7,6 +7,26 @@ function getOurPartnerPage() {
   return ourPartnerRepository.getOurPartnerPage();
 }
 
+function getOurPartnerMainBanner(id) {
+  return ourPartnerRepository.getOurPartnerMainBanner(id);
+}
+
+function getOurPartnerBankPartners(id) {
+  return ourPartnerRepository.getOurPartnerBankPartners(id);
+}
+
+function getOurPartnerOtherPartners(id) {
+  return ourPartnerRepository.getOurPartnerOtherPartners(id);
+}
+
+function getOurPartnerSection(section, id) {
+  return ourPartnerRepository.getOurPartnerSection(section, id);
+}
+
+function searchOurPartner(filters) {
+  return ourPartnerRepository.searchOurPartner(filters);
+}
+
 function upsertOurPartnerMainBanner(data) {
   return ourPartnerRepository.upsertOurPartnerMainBanner(data);
 }
@@ -27,6 +47,11 @@ function upsertOurPartnerOtherPartners(data) {
 
 module.exports = {
   getOurPartnerPage,
+  getOurPartnerBankPartners,
+  getOurPartnerMainBanner,
+  getOurPartnerOtherPartners,
+  getOurPartnerSection,
+  searchOurPartner,
   upsertOurPartnerBankPartners,
   upsertOurPartnerMainBanner,
   upsertOurPartnerOtherPartners,

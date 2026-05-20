@@ -3,6 +3,7 @@ const { requireAdminForPost } = require("../middlewares/auth.middleware");
 
 router.use("/auth", require("./auth.routes"));
 router.use("/contact-message", require("./contactMessage.routes"));
+router.use("/search", require("./search.routes"));
 router.use(requireAdminForPost);
 router.use("/pages", require("./page.routes"));
 router.use("/main-banners", require("./mainBanner.routes"));

@@ -2,6 +2,9 @@ const prisma = require("../utils/prisma");
 const { splitImageURLValues } = require("../utils/request");
 
 const OUR_PARTNER_PAGE_TITLE = "Our Partner";
+const SECTION_MAIN_BANNER = "main-banner";
+const SECTION_BANK_PARTNERS = "bank-partners";
+const SECTION_OTHER_PARTNERS = "other-partners";
 
 function createError(message, statusCode) {
   const error = new Error(message);
@@ -37,6 +40,57 @@ function getOrCreateOurPartnerPageByTitle() {
       title: OUR_PARTNER_PAGE_TITLE,
     },
   });
+}
+
+function normalizeOurPartnerSection(section) {
+  const normalizedSection = String(section || "")
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/\s+/g, "-");
+
+  if (["main-banner", "banner", "our-partner-main-banner"].includes(normalizedSection)) {
+    return SECTION_MAIN_BANNER;
+  }
+
+  if (
+    [
+      "bank",
+      "banks",
+      "bank-partner",
+      "bank-partners",
+      "section-one",
+      "section-1",
+      "one",
+      "1",
+      "our-partner-bank-partners",
+      "our-partner-section-one",
+    ].includes(normalizedSection)
+  ) {
+    return SECTION_BANK_PARTNERS;
+  }
+
+  if (
+    [
+      "other",
+      "others",
+      "other-partner",
+      "other-partners",
+      "section-two",
+      "section-2",
+      "two",
+      "2",
+      "our-partner-other-partners",
+      "our-partner-section-two",
+    ].includes(normalizedSection)
+  ) {
+    return SECTION_OTHER_PARTNERS;
+  }
+
+  throw createError(
+    "section must be one of: main-banner, bank-partners, other-partners.",
+    400
+  );
 }
 
 function getOurPartnerPageRecord(pageId) {
@@ -166,6 +220,204 @@ async function createMissingPartnerImages(imageRepository, sectionId, imageURLs)
   });
 }
 
+async function getOurPartnerPageIdForRead() {
+  const page = await prisma.page.findUnique({
+    where: {
+      title: OUR_PARTNER_PAGE_TITLE,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!page) {
+    throw createError("Our Partner page was not found.", 404);
+  }
+
+  return page.id;
+}
+
+async function getBankPartnersWithImages(where) {
+  const section = await prisma.ourpartnerbankpartners.findUnique({
+    where,
+    include: {
+      images: {
+        orderBy: {
+          id: "asc",
+        },
+      },
+    },
+  });
+
+  if (!section) {
+    return null;
+  }
+
+  await getNormalizedExistingImageURLs(
+    prisma.ourpartnerbankpartnerimage,
+    section.id
+  );
+
+  return prisma.ourpartnerbankpartners.findUnique({
+    where: {
+      id: section.id,
+    },
+    include: {
+      images: {
+        orderBy: {
+          id: "asc",
+        },
+      },
+    },
+  });
+}
+
+async function getOtherPartnersWithImages(where) {
+  const section = await prisma.ourpartnerotherpartners.findUnique({
+    where,
+    include: {
+      images: {
+        orderBy: {
+          id: "asc",
+        },
+      },
+    },
+  });
+
+  if (!section) {
+    return null;
+  }
+
+  await getNormalizedExistingImageURLs(
+    prisma.ourpartnerotherpartnerimage,
+    section.id
+  );
+
+  return prisma.ourpartnerotherpartners.findUnique({
+    where: {
+      id: section.id,
+    },
+    include: {
+      images: {
+        orderBy: {
+          id: "asc",
+        },
+      },
+    },
+  });
+}
+
+function wrapSearchResult(section, data) {
+  return {
+    section,
+    data,
+  };
+}
+
+async function getOurPartnerMainBanner(id) {
+  const where = id !== undefined
+    ? {
+        id,
+      }
+    : {
+        pageId: await getOurPartnerPageIdForRead(),
+      };
+
+  return prisma.ourpartnermainbanner.findUnique({
+    where,
+  });
+}
+
+async function getOurPartnerBankPartners(id) {
+  const where = id !== undefined
+    ? {
+        id,
+      }
+    : {
+        pageId: await getOurPartnerPageIdForRead(),
+      };
+
+  return getBankPartnersWithImages(where);
+}
+
+async function getOurPartnerOtherPartners(id) {
+  const where = id !== undefined
+    ? {
+        id,
+      }
+    : {
+        pageId: await getOurPartnerPageIdForRead(),
+      };
+
+  return getOtherPartnersWithImages(where);
+}
+
+async function getOurPartnerSection(section, id) {
+  const normalizedSection = normalizeOurPartnerSection(section);
+  let data;
+
+  if (normalizedSection === SECTION_MAIN_BANNER) {
+    data = await getOurPartnerMainBanner(id);
+  }
+
+  if (normalizedSection === SECTION_BANK_PARTNERS) {
+    data = await getOurPartnerBankPartners(id);
+  }
+
+  if (normalizedSection === SECTION_OTHER_PARTNERS) {
+    data = await getOurPartnerOtherPartners(id);
+  }
+
+  if (!data) {
+    throw createError("Our Partner section was not found.", 404);
+  }
+
+  return wrapSearchResult(normalizedSection, data);
+}
+
+async function searchOurPartnerById(id) {
+  const [mainBanner, bankPartners, otherPartners] = await Promise.all([
+    getOurPartnerMainBanner(id),
+    getOurPartnerBankPartners(id),
+    getOurPartnerOtherPartners(id),
+  ]);
+
+  const results = [];
+
+  if (mainBanner) {
+    results.push(wrapSearchResult(SECTION_MAIN_BANNER, mainBanner));
+  }
+
+  if (bankPartners) {
+    results.push(wrapSearchResult(SECTION_BANK_PARTNERS, bankPartners));
+  }
+
+  if (otherPartners) {
+    results.push(wrapSearchResult(SECTION_OTHER_PARTNERS, otherPartners));
+  }
+
+  if (!results.length) {
+    throw createError("No Our Partner data was found for this id.", 404);
+  }
+
+  return {
+    id,
+    results,
+  };
+}
+
+async function searchOurPartner({ id, section }) {
+  if (id === undefined && !section) {
+    throw createError("Send id, section, or both to search Our Partner data.", 400);
+  }
+
+  if (section) {
+    return getOurPartnerSection(section, id);
+  }
+
+  return searchOurPartnerById(id);
+}
+
 async function upsertOurPartnerMainBanner(data) {
   const page = await getOurPartnerPageRecord(data.pageId);
 
@@ -261,6 +513,11 @@ async function upsertOurPartnerOtherPartners(data) {
 
 module.exports = {
   getOurPartnerPage,
+  getOurPartnerBankPartners,
+  getOurPartnerMainBanner,
+  getOurPartnerOtherPartners,
+  getOurPartnerSection,
+  searchOurPartner,
   upsertOurPartnerBankPartners,
   upsertOurPartnerMainBanner,
   upsertOurPartnerOtherPartners,

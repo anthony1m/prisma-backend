@@ -8,6 +8,9 @@ const {
   upsertOurPartnerSectionSchema,
 } = require("../validations/ourPartner.validation");
 
+router.get("/", asyncRoute(ourPartnerController.getOurPartnerBankPartners));
+router.get("/:id", asyncRoute(ourPartnerController.getOurPartnerBankPartnersById));
+
 router.post(
   "/",
   upload.single("image"),
