@@ -1,0 +1,71 @@
+services:
+  app:
+    build: .
+    environment:
+      PORT: 3000
+
+      DATABASE_URL: "mysql://root:root%40calories@mysql:3306/prisma_beginner"
+      JWT_SECRET: "my_super_secret_key"
+
+      REDIS_URL: "redis://redis:6379"
+      CACHE_TTL_SECONDS: 300
+
+      SMTP_HOST: "smtp.gmail.com"
+      SMTP_PORT: "587"
+      SMTP_SECURE: "false"
+      SMTP_USER: "caltrackk@gmail.com"
+      SMTP_PASS: "zlhbmqhivwrozilr"
+      MAIL_FROM: "caltrackk@gmail.com"
+      MAIL_TO: "caltrackk@gmail.com"
+
+      PASSWORD_RESET_OTP_MINUTES: 3
+      EMAIL_VERIFICATION_OTP_MINUTES: 3
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    volumes:
+      - ./uploads:/app/uploads
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: "root@calories"
+      MYSQL_DATABASE: "prisma_beginner"
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot@calories"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+
+    ports:
+      - "6380:6379"
+
+    volumes:
+      - redis_data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:
+  redis_data:
