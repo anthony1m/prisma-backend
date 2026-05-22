@@ -1,55 +1,66 @@
 const prisma = require("../utils/prisma");
+const { cacheKey, rememberJson } = require("../utils/cache");
+const {
+  invalidateContactUsCache,
+  invalidateContactUsCacheAfter,
+} = require("../utils/contentCache");
 
 function getContactUsPage() {
-  return prisma.page.findUnique({
-    where: {
-      title: "Contact Us",
-    },
-    include: {
-      mainBanner: true,
-      contactUs: {
-        orderBy: {
-          id: "asc",
+  return rememberJson("contact-us:page", () =>
+    prisma.page.findUnique({
+      where: {
+        title: "Contact Us",
+      },
+      include: {
+        mainBanner: true,
+        contactUs: {
+          orderBy: {
+            id: "asc",
+          },
         },
       },
-    },
-  });
+    })
+  );
 }
 
 function upsertContactUs(data) {
-  return prisma.contactus.upsert({
-    where: {
-      pageId_title: {
-        pageId: data.pageId,
-        title: data.title,
+  return invalidateContactUsCacheAfter(
+    prisma.contactus.upsert({
+      where: {
+        pageId_title: {
+          pageId: data.pageId,
+          title: data.title,
+        },
       },
-    },
-    update: {
-      description: data.description,
-      imageURL: data.imageURL,
-    },
-    create: data,
-  });
+      update: {
+        description: data.description,
+        imageURL: data.imageURL,
+      },
+      create: data,
+    })
+  );
 }
 
 async function getContactUsNamedSection(title) {
-  const page = await prisma.page.findUnique({
-    where: {
-      title: "Contact Us",
-    },
-  });
-
-  if (!page) {
-    return null;
-  }
-
-  return prisma.contactus.findUnique({
-    where: {
-      pageId_title: {
-        pageId: page.id,
-        title,
+  return rememberJson(cacheKey("contact-us", "section", title), async () => {
+    const page = await prisma.page.findUnique({
+      where: {
+        title: "Contact Us",
       },
-    },
+    });
+
+    if (!page) {
+      return null;
+    }
+
+    return prisma.contactus.findUnique({
+      where: {
+        pageId_title: {
+          pageId: page.id,
+          title,
+        },
+      },
+    });
   });
 }
 
@@ -64,7 +75,7 @@ async function upsertContactUsNamedSection(title, data) {
     },
   });
 
-  return prisma.contactus.upsert({
+  const item = await prisma.contactus.upsert({
     where: {
       pageId_title: {
         pageId: page.id,
@@ -82,19 +93,25 @@ async function upsertContactUsNamedSection(title, data) {
       pageId: page.id,
     },
   });
+
+  await invalidateContactUsCache();
+
+  return item;
 }
 
 function listContactUsSections(pageId) {
-  return prisma.contactus.findMany({
-    where: pageId
-      ? {
-          pageId,
-        }
-      : undefined,
-    orderBy: {
-      id: "asc",
-    },
-  });
+  return rememberJson(cacheKey("contact-us", "sections", pageId), () =>
+    prisma.contactus.findMany({
+      where: pageId
+        ? {
+            pageId,
+          }
+        : undefined,
+      orderBy: {
+        id: "asc",
+      },
+    })
+  );
 }
 
 module.exports = {

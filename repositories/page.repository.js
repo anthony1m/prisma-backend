@@ -1,4 +1,6 @@
 const prisma = require("../utils/prisma");
+const { rememberJson } = require("../utils/cache");
+const { invalidatePagesCacheAfter } = require("../utils/contentCache");
 
 const pageInclude = {
   mainBanner: true,
@@ -46,26 +48,30 @@ const pageInclude = {
 };
 
 function listPages() {
-  return prisma.page.findMany({
-    include: pageInclude,
-    orderBy: {
-      id: "asc",
-    },
-  });
+  return rememberJson("pages:all", () =>
+    prisma.page.findMany({
+      include: pageInclude,
+      orderBy: {
+        id: "asc",
+      },
+    })
+  );
 }
 
 function upsertPage(title) {
-  return prisma.page.upsert({
-    where: {
-      title,
-    },
-    update: {
-      title,
-    },
-    create: {
-      title,
-    },
-  });
+  return invalidatePagesCacheAfter(
+    prisma.page.upsert({
+      where: {
+        title,
+      },
+      update: {
+        title,
+      },
+      create: {
+        title,
+      },
+    })
+  );
 }
 
 module.exports = {

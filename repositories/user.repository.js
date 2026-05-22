@@ -1,10 +1,12 @@
 const prisma = require("../utils/prisma");
+const { cacheKey, deleteKeys, rememberJson } = require("../utils/cache");
 
 const publicUserSelect = {
   id: true,
   name: true,
   email: true,
   role: true,
+  emailVerified: true,
 };
 
 function findByEmail(email) {
@@ -16,23 +18,32 @@ function findByEmail(email) {
 }
 
 function findPublicById(id) {
-  return prisma.user.findUnique({
-    where: {
-      id,
-    },
-    select: publicUserSelect,
-  });
+  return rememberJson(
+    cacheKey("user", id),
+    () =>
+      prisma.user.findUnique({
+        where: {
+          id,
+        },
+        select: publicUserSelect,
+      }),
+    60
+  );
 }
 
-function createUser(data) {
-  return prisma.user.create({
+async function createUser(data) {
+  const user = await prisma.user.create({
     data,
     select: publicUserSelect,
   });
+
+  await deleteKeys(cacheKey("user", user.id));
+
+  return user;
 }
 
-function makeAdminByEmail(email) {
-  return prisma.user.update({
+async function makeAdminByEmail(email) {
+  const user = await prisma.user.update({
     where: {
       email,
     },
@@ -41,11 +52,62 @@ function makeAdminByEmail(email) {
     },
     select: publicUserSelect,
   });
+
+  await deleteKeys(cacheKey("user", user.id));
+
+  return user;
+}
+
+async function markEmailVerifiedById(id) {
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      emailVerified: true,
+    },
+    select: publicUserSelect,
+  });
+
+  await deleteKeys(cacheKey("user", id));
+
+  return user;
+}
+
+async function updatePasswordById(id, password) {
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      password,
+    },
+    select: publicUserSelect,
+  });
+
+  await deleteKeys(cacheKey("user", id));
+
+  return user;
+}
+
+async function deleteUserById(id) {
+  const user = await prisma.user.delete({
+    where: {
+      id,
+    },
+  });
+
+  await deleteKeys(cacheKey("user", id));
+
+  return user;
 }
 
 module.exports = {
   createUser,
+  deleteUserById,
   findByEmail,
   findPublicById,
+  markEmailVerifiedById,
   makeAdminByEmail,
+  updatePasswordById,
 };

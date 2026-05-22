@@ -34,13 +34,42 @@ model Page {
 }
 
 model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password      String
+  role          String   @default("USER")
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  emailVerificationOtp emailverificationotp?
+  passwordResetOtp     passwordresetotp?
+
+  @@index([name])
+}
+
+model emailverificationotp {
   id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("USER")
+  otpHash   String
+  expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model passwordresetotp {
+  id         Int       @id @default(autoincrement())
+  otpHash    String
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model homefooter {
@@ -107,6 +136,7 @@ model ourservices {
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, title])
+  @@index([pageId, id])
 }
 
 model hometeammember {
@@ -119,6 +149,7 @@ model hometeammember {
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, title])
+  @@index([pageId, id])
 }
 
 model aboutusbanner {
@@ -161,6 +192,7 @@ model theexpansion {
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, title])
+  @@index([pageId, id])
 }
 
 model ourvalues {
@@ -172,6 +204,7 @@ model ourvalues {
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, title])
+  @@index([pageId, id])
 }
 
 model singaporeleadership {
@@ -184,6 +217,7 @@ model singaporeleadership {
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, title])
+  @@index([pageId, id])
 }
 
 model strategicobjectives {
@@ -196,6 +230,7 @@ model strategicobjectives {
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, title])
+  @@index([pageId, id])
 }
 
 model contactus {
@@ -208,6 +243,7 @@ model contactus {
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, title])
+  @@index([pageId, id])
 }
 
 model ourpartnermainbanner {
@@ -235,6 +271,8 @@ model ourpartnerbankpartnerimage {
 
   sectionId Int
   section   ourpartnerbankpartners @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, id])
 }
 
 model ourpartnerotherpartners {
@@ -252,4 +290,6 @@ model ourpartnerotherpartnerimage {
 
   sectionId Int
   section   ourpartnerotherpartners @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, id])
 }

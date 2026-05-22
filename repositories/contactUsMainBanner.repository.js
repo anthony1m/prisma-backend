@@ -1,16 +1,20 @@
 const prisma = require("../utils/prisma");
+const { rememberJson } = require("../utils/cache");
+const { invalidateContactUsCache } = require("../utils/contentCache");
 
 async function getContactUsMainBanner() {
-  const page = await prisma.page.findUnique({
-    where: {
-      title: "Contact Us",
-    },
-    include: {
-      mainBanner: true,
-    },
-  });
+  return rememberJson("contact-us:main-banner", async () => {
+    const page = await prisma.page.findUnique({
+      where: {
+        title: "Contact Us",
+      },
+      include: {
+        mainBanner: true,
+      },
+    });
 
-  return page?.mainBanner ?? null;
+    return page?.mainBanner ?? null;
+  });
 }
 
 async function upsertContactUsMainBanner(data) {
@@ -24,7 +28,7 @@ async function upsertContactUsMainBanner(data) {
     },
   });
 
-  return prisma.mainbanner.upsert({
+  const item = await prisma.mainbanner.upsert({
     where: {
       pageId: page.id,
     },
@@ -40,6 +44,10 @@ async function upsertContactUsMainBanner(data) {
       pageId: page.id,
     },
   });
+
+  await invalidateContactUsCache();
+
+  return item;
 }
 
 module.exports = {

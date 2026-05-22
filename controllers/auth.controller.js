@@ -9,16 +9,13 @@ async function signup(req, res) {
     });
   }
 
-  const user = await authService.signup({
+  const result = await authService.signup({
     name,
     email,
     password,
   });
 
-  res.status(201).json({
-    message: "User created successfully",
-    user,
-  });
+  res.status(201).json(result);
 }
 
 async function login(req, res) {
@@ -38,7 +35,46 @@ async function login(req, res) {
   res.json(result);
 }
 
+async function forgotPassword(req, res) {
+  const result = await authService.forgotPassword({
+    email: req.body.email,
+  });
+
+  res.json(result);
+}
+
+async function verifyEmail(req, res) {
+  const result = await authService.verifyEmail({
+    email: req.body.email,
+    otp: req.body.otp,
+  });
+
+  res.json(result);
+}
+
+async function verifyResetOtp(req, res) {
+  const result = await authService.verifyResetOtp({
+    email: req.body.email,
+    otp: req.body.otp,
+  });
+
+  res.json(result);
+}
+
+async function resetPassword(req, res) {
+  const result = await authService.resetPassword({
+    email: req.body.email,
+    newPassword: req.body.newPassword,
+  });
+
+  res.json(result);
+}
+
 module.exports = {
+  forgotPassword,
   signup,
   login,
+  resetPassword,
+  verifyEmail,
+  verifyResetOtp,
 };

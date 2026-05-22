@@ -1,11 +1,10 @@
 function formatIssue(issue) {
   const field = issue.path.join(".");
 
-  if (!field) {
-    return issue.message;
-  }
-
-  return `${field}: ${issue.message}`;
+  return {
+    field: field || null,
+    message: issue.message,
+  };
 }
 
 function validate(schema) {

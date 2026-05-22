@@ -8,6 +8,8 @@ const {
   titleDescriptionPageImageSchema,
 } = require("../validations/section.validation");
 
+router.get("/", asyncRoute(teamMemberController.listTeamMembers));
+
 router.post(
   "/",
   upload.single("image"),

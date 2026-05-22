@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const { cacheKey, rememberJson } = require("../utils/cache");
 
 function createError(message, statusCode) {
   const error = new Error(message);
@@ -240,20 +241,22 @@ async function searchContent({ id, section }) {
     throw createError("Send id, section, or both.", 400);
   }
 
-  const sources = getSources(section);
-  const sourceResults = await Promise.all(
-    sources.map((source) => searchSource(source, id))
-  );
-  const results = sourceResults.flat();
+  return rememberJson(cacheKey("search", "content", id, section), async () => {
+    const sources = getSources(section);
+    const sourceResults = await Promise.all(
+      sources.map((source) => searchSource(source, id))
+    );
+    const results = sourceResults.flat();
 
-  return {
-    filters: {
-      id: id ?? null,
-      section: section || null,
-    },
-    count: results.length,
-    results,
-  };
+    return {
+      filters: {
+        id: id ?? null,
+        section: section || null,
+      },
+      count: results.length,
+      results,
+    };
+  }, 60);
 }
 
 module.exports = {

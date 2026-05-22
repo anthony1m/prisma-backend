@@ -1,4 +1,6 @@
 const prisma = require("../utils/prisma");
+const { cacheKey, rememberJson } = require("../utils/cache");
+const { invalidatePartnersCache } = require("../utils/contentCache");
 const { splitImageURLValues } = require("../utils/request");
 
 const OUR_PARTNER_PAGE_TITLE = "Our Partner";
@@ -102,60 +104,62 @@ function getOurPartnerPageRecord(pageId) {
 }
 
 async function getOurPartnerPage() {
-  const page = await prisma.page.findUnique({
-    where: {
-      title: OUR_PARTNER_PAGE_TITLE,
-    },
-    include: {
-      ourPartnerMainBanner: true,
-      ourPartnerBankPartners: true,
-      ourPartnerOtherPartners: true,
-    },
-  });
+  return rememberJson("our-partner:page", async () => {
+    const page = await prisma.page.findUnique({
+      where: {
+        title: OUR_PARTNER_PAGE_TITLE,
+      },
+      include: {
+        ourPartnerMainBanner: true,
+        ourPartnerBankPartners: true,
+        ourPartnerOtherPartners: true,
+      },
+    });
 
-  if (!page) {
-    return null;
-  }
+    if (!page) {
+      return null;
+    }
 
-  if (page.ourPartnerBankPartners) {
-    await getNormalizedExistingImageURLs(
-      prisma.ourpartnerbankpartnerimage,
-      page.ourPartnerBankPartners.id
-    );
-  }
+    if (page.ourPartnerBankPartners) {
+      await getNormalizedExistingImageURLs(
+        prisma.ourpartnerbankpartnerimage,
+        page.ourPartnerBankPartners.id
+      );
+    }
 
-  if (page.ourPartnerOtherPartners) {
-    await getNormalizedExistingImageURLs(
-      prisma.ourpartnerotherpartnerimage,
-      page.ourPartnerOtherPartners.id
-    );
-  }
+    if (page.ourPartnerOtherPartners) {
+      await getNormalizedExistingImageURLs(
+        prisma.ourpartnerotherpartnerimage,
+        page.ourPartnerOtherPartners.id
+      );
+    }
 
-  return prisma.page.findUnique({
-    where: {
-      id: page.id,
-    },
-    include: {
-      ourPartnerMainBanner: true,
-      ourPartnerBankPartners: {
-        include: {
-          images: {
-            orderBy: {
-              id: "asc",
+    return prisma.page.findUnique({
+      where: {
+        id: page.id,
+      },
+      include: {
+        ourPartnerMainBanner: true,
+        ourPartnerBankPartners: {
+          include: {
+            images: {
+              orderBy: {
+                id: "asc",
+              },
+            },
+          },
+        },
+        ourPartnerOtherPartners: {
+          include: {
+            images: {
+              orderBy: {
+                id: "asc",
+              },
             },
           },
         },
       },
-      ourPartnerOtherPartners: {
-        include: {
-          images: {
-            orderBy: {
-              id: "asc",
-            },
-          },
-        },
-      },
-    },
+    });
   });
 }
 
@@ -315,41 +319,56 @@ function wrapSearchResult(section, data) {
 }
 
 async function getOurPartnerMainBanner(id) {
-  const where = id !== undefined
-    ? {
-        id,
-      }
-    : {
-        pageId: await getOurPartnerPageIdForRead(),
-      };
+  return rememberJson(
+    cacheKey("our-partner", "main-banner", id ?? "current"),
+    async () => {
+      const where = id !== undefined
+        ? {
+            id,
+          }
+        : {
+            pageId: await getOurPartnerPageIdForRead(),
+          };
 
-  return prisma.ourpartnermainbanner.findUnique({
-    where,
-  });
+      return prisma.ourpartnermainbanner.findUnique({
+        where,
+      });
+    }
+  );
 }
 
 async function getOurPartnerBankPartners(id) {
-  const where = id !== undefined
-    ? {
-        id,
-      }
-    : {
-        pageId: await getOurPartnerPageIdForRead(),
-      };
+  return rememberJson(
+    cacheKey("our-partner", "bank-partners", id ?? "current"),
+    async () => {
+      const where = id !== undefined
+        ? {
+            id,
+          }
+        : {
+            pageId: await getOurPartnerPageIdForRead(),
+          };
 
-  return getBankPartnersWithImages(where);
+      return getBankPartnersWithImages(where);
+    }
+  );
 }
 
 async function getOurPartnerOtherPartners(id) {
-  const where = id !== undefined
-    ? {
-        id,
-      }
-    : {
-        pageId: await getOurPartnerPageIdForRead(),
-      };
+  return rememberJson(
+    cacheKey("our-partner", "other-partners", id ?? "current"),
+    async () => {
+      const where = id !== undefined
+        ? {
+            id,
+          }
+        : {
+            pageId: await getOurPartnerPageIdForRead(),
+          };
 
-  return getOtherPartnersWithImages(where);
+      return getOtherPartnersWithImages(where);
+    }
+  );
 }
 
 async function getOurPartnerSection(section, id) {
@@ -421,7 +440,7 @@ async function searchOurPartner({ id, section }) {
 async function upsertOurPartnerMainBanner(data) {
   const page = await getOurPartnerPageRecord(data.pageId);
 
-  return prisma.ourpartnermainbanner.upsert({
+  const item = await prisma.ourpartnermainbanner.upsert({
     where: {
       pageId: page.id,
     },
@@ -437,6 +456,10 @@ async function upsertOurPartnerMainBanner(data) {
       pageId: page.id,
     },
   });
+
+  await invalidatePartnersCache();
+
+  return item;
 }
 
 async function upsertOurPartnerBankPartners(data) {
@@ -461,7 +484,7 @@ async function upsertOurPartnerBankPartners(data) {
     data.imageURLs
   );
 
-  return prisma.ourpartnerbankpartners.findUnique({
+  const item = await prisma.ourpartnerbankpartners.findUnique({
     where: {
       pageId: page.id,
     },
@@ -473,6 +496,10 @@ async function upsertOurPartnerBankPartners(data) {
       },
     },
   });
+
+  await invalidatePartnersCache();
+
+  return item;
 }
 
 async function upsertOurPartnerOtherPartners(data) {
@@ -497,7 +524,7 @@ async function upsertOurPartnerOtherPartners(data) {
     data.imageURLs
   );
 
-  return prisma.ourpartnerotherpartners.findUnique({
+  const item = await prisma.ourpartnerotherpartners.findUnique({
     where: {
       pageId: page.id,
     },
@@ -509,6 +536,10 @@ async function upsertOurPartnerOtherPartners(data) {
       },
     },
   });
+
+  await invalidatePartnersCache();
+
+  return item;
 }
 
 module.exports = {
