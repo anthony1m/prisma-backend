@@ -16,4 +16,6 @@ router.post(
   asyncRoute(navigationbarController.upsertNavigationbar)
 );
 
+router.delete("/:id", asyncRoute(navigationbarController.deleteNavigationbar));
+
 module.exports = router;

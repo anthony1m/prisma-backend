@@ -13,4 +13,6 @@ router.post(
   asyncRoute(ourValuesController.upsertOurValue)
 );
 
+router.delete("/:id", asyncRoute(ourValuesController.deleteOurValue));
+
 module.exports = router;

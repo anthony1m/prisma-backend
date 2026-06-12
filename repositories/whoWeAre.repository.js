@@ -1,5 +1,11 @@
 const prisma = require("../utils/prisma");
-const { invalidateHomeCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAfter,
+  invalidateHomeCache,
+  invalidateHomeCacheAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function upsertWhoWeAre(data) {
   return invalidateHomeCacheAfter(
@@ -18,6 +24,20 @@ function upsertWhoWeAre(data) {
   );
 }
 
+function deleteWhoWeAre(id) {
+  return invalidateAfter(
+    prisma.whoweare.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateHomeCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteWhoWeAre,
   upsertWhoWeAre,
 };

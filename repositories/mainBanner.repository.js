@@ -1,5 +1,12 @@
 const prisma = require("../utils/prisma");
-const { invalidateHomeCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAfter,
+  invalidateContactUsCache,
+  invalidateHomeCache,
+  invalidateHomeCacheAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function upsertMainBanner(data) {
   return invalidateHomeCacheAfter(
@@ -17,6 +24,21 @@ function upsertMainBanner(data) {
   );
 }
 
+function deleteMainBanner(id) {
+  return invalidateAfter(
+    prisma.mainbanner.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateHomeCache,
+    invalidateContactUsCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteMainBanner,
   upsertMainBanner,
 };

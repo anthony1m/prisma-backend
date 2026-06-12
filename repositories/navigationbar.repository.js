@@ -1,6 +1,11 @@
 const prisma = require("../utils/prisma");
 const { rememberJson } = require("../utils/cache");
-const { invalidateNavbarCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAfter,
+  invalidateNavbarCache,
+  invalidateNavbarCacheAfter,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function getNavigationbar() {
   return rememberJson("navigationbar:main", () =>
@@ -31,7 +36,20 @@ function upsertNavigationbar(data) {
   );
 }
 
+function deleteNavigationbar(id) {
+  return invalidateAfter(
+    prisma.navigationbar.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateNavbarCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteNavigationbar,
   getNavigationbar,
   upsertNavigationbar,
 };

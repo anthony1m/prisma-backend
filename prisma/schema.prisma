@@ -75,7 +75,7 @@ model passwordresetotp {
 model homefooter {
   id          Int    @id @default(1)
   title       String
-  description String
+  description String @db.LongText
   imageURL    String
 }
 
@@ -88,7 +88,7 @@ model navigationbar {
 model mainbanner {
   id          Int     @id @default(autoincrement())
   title       String
-  description String?
+  description String? @db.LongText
   imageURL    String
 
   pageId Int  @unique
@@ -98,7 +98,7 @@ model mainbanner {
 model whoweare {
   id          Int    @id @default(autoincrement())
   title       String
-  description String
+  description String @db.LongText
   imageURL    String
   button      String
 
@@ -109,7 +109,7 @@ model whoweare {
 model ourmission {
   id          Int    @id @default(autoincrement())
   title       String
-  description String
+  description String @db.LongText
   imageURL    String
 
   pageId Int  @unique
@@ -119,7 +119,7 @@ model ourmission {
 model groupmission {
   id          Int    @id @default(autoincrement())
   title       String
-  description String
+  description String @db.LongText
   imageURL    String
 
   pageId Int  @unique
@@ -129,7 +129,7 @@ model groupmission {
 model ourservices {
   id          Int    @id @default(autoincrement())
   title       String
-  description String
+  description String @db.LongText
   imageURL    String
 
   pageId Int
@@ -142,7 +142,7 @@ model ourservices {
 model hometeammember {
   id          Int    @id @default(autoincrement())
   title       String
-  description String
+  description String @db.LongText
   imageURL    String
 
   pageId Int
@@ -155,7 +155,7 @@ model hometeammember {
 model aboutusbanner {
   id          Int     @id @default(autoincrement())
   title       String
-  description String?
+  description String? @db.LongText
   imageURL    String
 
   pageId Int  @unique
@@ -165,7 +165,7 @@ model aboutusbanner {
 model grouphistory {
   id          Int    @id @default(autoincrement())
   title       String
-  description String @db.Text
+  description String @db.LongText
   imageURL    String
 
   pageId Int  @unique
@@ -175,7 +175,7 @@ model grouphistory {
 model strategicpresence {
   id          Int    @id @default(autoincrement())
   title       String
-  description String @db.Text
+  description String @db.LongText
   imageURL    String
 
   pageId Int  @unique
@@ -185,7 +185,7 @@ model strategicpresence {
 model theexpansion {
   id          Int     @id @default(autoincrement())
   title       String
-  description String  @db.Text
+  description String  @db.LongText
   imageURL    String?
 
   pageId Int
@@ -198,7 +198,7 @@ model theexpansion {
 model ourvalues {
   id          Int     @id @default(autoincrement())
   title       String
-  description String? @db.Text
+  description String? @db.LongText
 
   pageId Int
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
@@ -210,7 +210,7 @@ model ourvalues {
 model singaporeleadership {
   id          Int    @id @default(autoincrement())
   title       String
-  description String @db.Text
+  description String @db.LongText
   imageURL    String
 
   pageId Int
@@ -223,20 +223,22 @@ model singaporeleadership {
 model strategicobjectives {
   id          Int    @id @default(autoincrement())
   title       String
-  description String @db.Text
+  description String @db.LongText
   imageURL    String
 
   pageId Int
   page   Page @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
-  @@unique([pageId, title])
   @@index([pageId, id])
 }
 
 model contactus {
   id          Int     @id @default(autoincrement())
   title       String
-  description String? @db.Text
+  description String? @db.LongText
+  phone       String? @db.LongText
+  address     String? @db.LongText
+  email       String? @db.LongText
   imageURL    String?
 
   pageId Int
@@ -249,7 +251,7 @@ model contactus {
 model ourpartnermainbanner {
   id          Int     @id @default(autoincrement())
   title       String
-  description String? @db.Text
+  description String? @db.LongText
   imageURL    String
 
   pageId Int  @unique

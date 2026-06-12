@@ -15,4 +15,6 @@ router.post(
   asyncRoute(groupHistoryController.upsertGroupHistory)
 );
 
+router.delete("/:id", asyncRoute(groupHistoryController.deleteGroupHistory));
+
 module.exports = router;

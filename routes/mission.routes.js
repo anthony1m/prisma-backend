@@ -15,4 +15,6 @@ router.post(
   asyncRoute(missionController.upsertMission)
 );
 
+router.delete("/:id", asyncRoute(missionController.deleteMission));
+
 module.exports = router;

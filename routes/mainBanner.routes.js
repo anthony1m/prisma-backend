@@ -13,4 +13,6 @@ router.post(
   asyncRoute(mainBannerController.upsertMainBanner)
 );
 
+router.delete("/:id", asyncRoute(mainBannerController.deleteMainBanner));
+
 module.exports = router;

@@ -1,5 +1,4 @@
 const router = require("express").Router();
-
 const teamMemberController = require("../controllers/teamMember.controller");
 const validate = require("../middlewares/validate.middleware");
 const asyncRoute = require("../utils/asyncRoute");
@@ -16,5 +15,7 @@ router.post(
   validate(titleDescriptionPageImageSchema),
   asyncRoute(teamMemberController.upsertTeamMember)
 );
+
+router.delete("/:id", asyncRoute(teamMemberController.deleteTeamMember));
 
 module.exports = router;

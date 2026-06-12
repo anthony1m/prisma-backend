@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { imageURL, optionalText, text } = require("../utils/request");
 
 async function getContactUsMainBanner(req, res) {
@@ -16,7 +17,17 @@ async function upsertContactUsMainBanner(req, res) {
   res.status(201).json(item);
 }
 
+function deleteContactUsMainBanner(req, res) {
+  return deleteById(
+    req,
+    res,
+    sectionService.deleteContactUsMainBanner,
+    "contact us main banner"
+  );
+}
+
 module.exports = {
+  deleteContactUsMainBanner,
   getContactUsMainBanner,
   upsertContactUsMainBanner,
 };

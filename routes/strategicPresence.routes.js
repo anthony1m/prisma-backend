@@ -15,4 +15,9 @@ router.post(
   asyncRoute(strategicPresenceController.upsertStrategicPresence)
 );
 
+router.delete(
+  "/:id",
+  asyncRoute(strategicPresenceController.deleteStrategicPresence)
+);
+
 module.exports = router;

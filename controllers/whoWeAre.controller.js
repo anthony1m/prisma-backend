@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { imageURL, pageId, text } = require("../utils/request");
 
 async function upsertWhoWeAre(req, res) {
@@ -13,6 +14,11 @@ async function upsertWhoWeAre(req, res) {
   res.status(201).json(item);
 }
 
+function deleteWhoWeAre(req, res) {
+  return deleteById(req, res, sectionService.deleteWhoWeAre, "who we are");
+}
+
 module.exports = {
+  deleteWhoWeAre,
   upsertWhoWeAre,
 };

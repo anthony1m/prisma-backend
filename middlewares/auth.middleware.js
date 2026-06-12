@@ -80,8 +80,10 @@ async function requireAdmin(req, res, next) {
   }
 }
 
+const ADMIN_MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
 function requireAdminForPost(req, res, next) {
-  if (req.method !== "POST") {
+  if (!ADMIN_MUTATION_METHODS.has(req.method)) {
     next();
     return;
   }

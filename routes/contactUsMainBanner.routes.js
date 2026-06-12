@@ -16,4 +16,9 @@ router.post(
   asyncRoute(contactUsMainBannerController.upsertContactUsMainBanner)
 );
 
+router.delete(
+  "/:id",
+  asyncRoute(contactUsMainBannerController.deleteContactUsMainBanner)
+);
+
 module.exports = router;

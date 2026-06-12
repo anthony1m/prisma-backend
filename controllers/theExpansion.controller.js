@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { optionalImageURL, pageId, text } = require("../utils/request");
 
 async function listTheExpansions(req, res) {
@@ -23,7 +24,12 @@ async function upsertTheExpansion(req, res) {
   res.status(201).json(item);
 }
 
+function deleteTheExpansion(req, res) {
+  return deleteById(req, res, sectionService.deleteTheExpansion, "the expansion");
+}
+
 module.exports = {
   listTheExpansions,
   upsertTheExpansion,
+  deleteTheExpansion,
 };

@@ -17,4 +17,6 @@ router.post(
   asyncRoute(aboutUsBannerController.upsertAboutUsBanner)
 );
 
+router.delete("/:id", asyncRoute(aboutUsBannerController.deleteAboutUsBanner));
+
 module.exports = router;

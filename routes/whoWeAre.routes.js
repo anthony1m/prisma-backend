@@ -13,4 +13,6 @@ router.post(
   asyncRoute(whoWeAreController.upsertWhoWeAre)
 );
 
+router.delete("/:id", asyncRoute(whoWeAreController.deleteWhoWeAre));
+
 module.exports = router;

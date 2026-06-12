@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { imageURL, pageId, text } = require("../utils/request");
 
 async function upsertStrategicPresence(req, res) {
@@ -12,6 +13,16 @@ async function upsertStrategicPresence(req, res) {
   res.status(201).json(item);
 }
 
+function deleteStrategicPresence(req, res) {
+  return deleteById(
+    req,
+    res,
+    sectionService.deleteStrategicPresence,
+    "strategic presence"
+  );
+}
+
 module.exports = {
+  deleteStrategicPresence,
   upsertStrategicPresence,
 };

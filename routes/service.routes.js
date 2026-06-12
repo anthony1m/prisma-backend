@@ -15,4 +15,6 @@ router.post(
   asyncRoute(serviceController.upsertOurService)
 );
 
+router.delete("/:id", asyncRoute(serviceController.deleteOurService));
+
 module.exports = router;

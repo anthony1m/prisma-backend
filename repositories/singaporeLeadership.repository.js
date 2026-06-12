@@ -1,5 +1,11 @@
 const prisma = require("../utils/prisma");
-const { invalidateAboutUsCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAboutUsCache,
+  invalidateAboutUsCacheAfter,
+  invalidateAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function upsertSingaporeLeadership(data) {
   return invalidateAboutUsCacheAfter(
@@ -19,6 +25,20 @@ function upsertSingaporeLeadership(data) {
   );
 }
 
+function deleteSingaporeLeadership(id) {
+  return invalidateAfter(
+    prisma.singaporeleadership.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateAboutUsCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteSingaporeLeadership,
   upsertSingaporeLeadership,
 };

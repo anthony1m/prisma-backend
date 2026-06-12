@@ -1,6 +1,11 @@
 const prisma = require("../utils/prisma");
 const { rememberJson } = require("../utils/cache");
-const { invalidateFooterCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAfter,
+  invalidateFooterCache,
+  invalidateFooterCacheAfter,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function getHomeFooter() {
   return rememberJson("home-footer:main", () =>
@@ -33,7 +38,20 @@ function upsertHomeFooter(data) {
   );
 }
 
+function deleteHomeFooter(id) {
+  return invalidateAfter(
+    prisma.homefooter.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateFooterCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteHomeFooter,
   getHomeFooter,
   upsertHomeFooter,
 };

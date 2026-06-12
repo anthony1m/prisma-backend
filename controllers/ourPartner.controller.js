@@ -1,4 +1,5 @@
 const ourPartnerService = require("../services/ourPartner.service");
+const { deleteById } = require("../utils/http");
 const {
   imageURL,
   imageURLs,
@@ -177,7 +178,47 @@ async function upsertOurPartnerOtherPartners(req, res) {
   res.status(201).json(item);
 }
 
+function deleteOurPartnerMainBanner(req, res) {
+  return deleteById(
+    req,
+    res,
+    ourPartnerService.deleteOurPartnerMainBanner,
+    "Our Partner main banner"
+  );
+}
+
+function deleteOurPartnerBankPartners(req, res) {
+  return deleteById(
+    req,
+    res,
+    ourPartnerService.deleteOurPartnerBankPartners,
+    "Our Partner bank partners section"
+  );
+}
+
+function deleteOurPartnerOtherPartners(req, res) {
+  return deleteById(
+    req,
+    res,
+    ourPartnerService.deleteOurPartnerOtherPartners,
+    "Our Partner other partners section"
+  );
+}
+
+function deleteOurPartnerSection(req, res) {
+  return deleteById(
+    req,
+    res,
+    (id) => ourPartnerService.deleteOurPartnerSection(req.params.section, id),
+    "Our Partner section"
+  );
+}
+
 module.exports = {
+  deleteOurPartnerBankPartners,
+  deleteOurPartnerMainBanner,
+  deleteOurPartnerOtherPartners,
+  deleteOurPartnerSection,
   getOurPartnerPage,
   getOurPartnerBankPartners,
   getOurPartnerBankPartnersById,

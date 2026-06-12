@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { imageURL, pageId, text } = require("../utils/request");
 
 async function upsertOurService(req, res) {
@@ -12,6 +13,11 @@ async function upsertOurService(req, res) {
   res.status(201).json(item);
 }
 
+function deleteOurService(req, res) {
+  return deleteById(req, res, sectionService.deleteOurService, "service");
+}
+
 module.exports = {
+  deleteOurService,
   upsertOurService,
 };

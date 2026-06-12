@@ -16,4 +16,9 @@ router.post(
   asyncRoute(contactUsLocationController.upsertContactUsSenegal)
 );
 
+router.delete(
+  "/:id",
+  asyncRoute(contactUsLocationController.deleteContactUsSenegal)
+);
+
 module.exports = router;

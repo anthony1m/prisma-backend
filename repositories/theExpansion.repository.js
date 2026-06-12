@@ -1,6 +1,13 @@
 const prisma = require("../utils/prisma");
 const { cacheKey, rememberJson } = require("../utils/cache");
-const { invalidateExpansionsCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAboutUsCache,
+  invalidateAfter,
+  invalidateExpansionsCache,
+  invalidateExpansionsCacheAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function listTheExpansions(pageId) {
   return rememberJson(cacheKey("the-expansions", "list", pageId), () =>
@@ -35,7 +42,22 @@ function upsertTheExpansion(data) {
   );
 }
 
+function deleteTheExpansion(id) {
+  return invalidateAfter(
+    prisma.theexpansion.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateExpansionsCache,
+    invalidateAboutUsCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteTheExpansion,
   listTheExpansions,
   upsertTheExpansion,
 };

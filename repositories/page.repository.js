@@ -1,6 +1,9 @@
 const prisma = require("../utils/prisma");
 const { rememberJson } = require("../utils/cache");
 const { invalidatePagesCacheAfter } = require("../utils/contentCache");
+const {
+  formatStrategicObjectivesSection,
+} = require("./strategicObjectives.repository");
 
 const pageInclude = {
   mainBanner: true,
@@ -48,14 +51,22 @@ const pageInclude = {
 };
 
 function listPages() {
-  return rememberJson("pages:all", () =>
-    prisma.page.findMany({
+  return rememberJson("pages:all", async () => {
+    const pages = await prisma.page.findMany({
       include: pageInclude,
       orderBy: {
         id: "asc",
       },
-    })
-  );
+    });
+
+    return pages.map((page) => ({
+      ...page,
+      strategicObjectives: formatStrategicObjectivesSection(
+        page.strategicObjectives,
+        page.id
+      ),
+    }));
+  });
 }
 
 function upsertPage(title) {

@@ -39,6 +39,10 @@ function invalidateExpansionsCache() {
   return deleteByPatterns(["the-expansions:*"]);
 }
 
+function invalidateStrategicObjectivesCache() {
+  return deleteByPatterns(["strategic-objectives:*"]);
+}
+
 function invalidatePagesCache() {
   return deleteByPatterns(["page:*", "pages:*"]);
 }
@@ -79,6 +83,10 @@ function invalidateExpansionsCacheAfter(promise) {
   return invalidateAfter(promise, invalidateExpansionsCache);
 }
 
+function invalidateStrategicObjectivesCacheAfter(promise) {
+  return invalidateAfter(promise, invalidateStrategicObjectivesCache);
+}
+
 function invalidatePagesCacheAfter(promise) {
   return invalidateAfter(promise, invalidatePagesCache);
 }
@@ -102,6 +110,8 @@ module.exports = {
   invalidatePartnersCache,
   invalidatePartnersCacheAfter,
   invalidateSearchCache,
+  invalidateStrategicObjectivesCache,
+  invalidateStrategicObjectivesCacheAfter,
   invalidateTeamMembersCache,
   invalidateTeamMembersCacheAfter,
 };

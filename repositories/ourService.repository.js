@@ -1,5 +1,11 @@
 const prisma = require("../utils/prisma");
-const { invalidateHomeCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAfter,
+  invalidateHomeCache,
+  invalidateHomeCacheAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function upsertOurService(data) {
   return invalidateHomeCacheAfter(
@@ -19,6 +25,20 @@ function upsertOurService(data) {
   );
 }
 
+function deleteOurService(id) {
+  return invalidateAfter(
+    prisma.ourservices.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateHomeCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteOurService,
   upsertOurService,
 };

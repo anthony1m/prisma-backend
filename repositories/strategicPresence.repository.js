@@ -1,5 +1,11 @@
 const prisma = require("../utils/prisma");
-const { invalidateAboutUsCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAboutUsCache,
+  invalidateAboutUsCacheAfter,
+  invalidateAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function upsertStrategicPresence(data) {
   return invalidateAboutUsCacheAfter(
@@ -17,6 +23,20 @@ function upsertStrategicPresence(data) {
   );
 }
 
+function deleteStrategicPresence(id) {
+  return invalidateAfter(
+    prisma.strategicpresence.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateAboutUsCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteStrategicPresence,
   upsertStrategicPresence,
 };

@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { imageURL, pageId, text } = require("../utils/request");
 
 async function upsertGroupHistory(req, res) {
@@ -12,6 +13,11 @@ async function upsertGroupHistory(req, res) {
   res.status(201).json(item);
 }
 
+function deleteGroupHistory(req, res) {
+  return deleteById(req, res, sectionService.deleteGroupHistory, "group history");
+}
+
 module.exports = {
+  deleteGroupHistory,
   upsertGroupHistory,
 };

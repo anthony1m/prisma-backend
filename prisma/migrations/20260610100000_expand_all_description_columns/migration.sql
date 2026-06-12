@@ -1,0 +1,16 @@
+ALTER TABLE `homefooter` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `mainbanner` MODIFY `description` LONGTEXT NULL;
+ALTER TABLE `whoweare` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `ourmission` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `groupmission` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `ourservices` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `hometeammember` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `aboutusbanner` MODIFY `description` LONGTEXT NULL;
+ALTER TABLE `grouphistory` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `strategicpresence` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `theexpansion` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `ourvalues` MODIFY `description` LONGTEXT NULL;
+ALTER TABLE `singaporeleadership` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `strategicobjectives` MODIFY `description` LONGTEXT NOT NULL;
+ALTER TABLE `contactus` MODIFY `description` LONGTEXT NULL;
+ALTER TABLE `ourpartnermainbanner` MODIFY `description` LONGTEXT NULL;

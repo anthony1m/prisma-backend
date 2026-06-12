@@ -1,5 +1,11 @@
 const prisma = require("../utils/prisma");
-const { invalidateAboutUsCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAboutUsCache,
+  invalidateAboutUsCacheAfter,
+  invalidateAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function upsertGroupHistory(data) {
   return invalidateAboutUsCacheAfter(
@@ -17,6 +23,20 @@ function upsertGroupHistory(data) {
   );
 }
 
+function deleteGroupHistory(id) {
+  return invalidateAfter(
+    prisma.grouphistory.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateAboutUsCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteGroupHistory,
   upsertGroupHistory,
 };

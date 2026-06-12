@@ -1,5 +1,11 @@
 const prisma = require("../utils/prisma");
-const { invalidateHomeCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAfter,
+  invalidateHomeCache,
+  invalidateHomeCacheAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function upsertGroupMission(data) {
   return invalidateHomeCacheAfter(
@@ -17,6 +23,20 @@ function upsertGroupMission(data) {
   );
 }
 
+function deleteGroupMission(id) {
+  return invalidateAfter(
+    prisma.groupmission.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateHomeCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteGroupMission,
   upsertGroupMission,
 };

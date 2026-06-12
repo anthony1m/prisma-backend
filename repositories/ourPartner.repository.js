@@ -1,6 +1,9 @@
 const prisma = require("../utils/prisma");
 const { cacheKey, rememberJson } = require("../utils/cache");
-const { invalidatePartnersCache } = require("../utils/contentCache");
+const {
+  invalidatePartnersCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 const { splitImageURLValues } = require("../utils/request");
 
 const OUR_PARTNER_PAGE_TITLE = "Our Partner";
@@ -542,7 +545,65 @@ async function upsertOurPartnerOtherPartners(data) {
   return item;
 }
 
+async function invalidateOurPartnerReads() {
+  await Promise.all([invalidatePartnersCache(), invalidateSearchCache()]);
+}
+
+async function deleteOurPartnerMainBanner(id) {
+  const result = await prisma.ourpartnermainbanner.deleteMany({
+    where: {
+      id,
+    },
+  });
+
+  await invalidateOurPartnerReads();
+
+  return result;
+}
+
+async function deleteOurPartnerBankPartners(id) {
+  const result = await prisma.ourpartnerbankpartners.deleteMany({
+    where: {
+      id,
+    },
+  });
+
+  await invalidateOurPartnerReads();
+
+  return result;
+}
+
+async function deleteOurPartnerOtherPartners(id) {
+  const result = await prisma.ourpartnerotherpartners.deleteMany({
+    where: {
+      id,
+    },
+  });
+
+  await invalidateOurPartnerReads();
+
+  return result;
+}
+
+function deleteOurPartnerSection(section, id) {
+  const normalizedSection = normalizeOurPartnerSection(section);
+
+  if (normalizedSection === SECTION_MAIN_BANNER) {
+    return deleteOurPartnerMainBanner(id);
+  }
+
+  if (normalizedSection === SECTION_BANK_PARTNERS) {
+    return deleteOurPartnerBankPartners(id);
+  }
+
+  return deleteOurPartnerOtherPartners(id);
+}
+
 module.exports = {
+  deleteOurPartnerBankPartners,
+  deleteOurPartnerMainBanner,
+  deleteOurPartnerOtherPartners,
+  deleteOurPartnerSection,
   getOurPartnerPage,
   getOurPartnerBankPartners,
   getOurPartnerMainBanner,

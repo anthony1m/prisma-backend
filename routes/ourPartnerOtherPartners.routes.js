@@ -10,6 +10,7 @@ const {
 
 router.get("/", asyncRoute(ourPartnerController.getOurPartnerOtherPartners));
 router.get("/:id", asyncRoute(ourPartnerController.getOurPartnerOtherPartnersById));
+router.delete("/:id", asyncRoute(ourPartnerController.deleteOurPartnerOtherPartners));
 
 router.post(
   "/",

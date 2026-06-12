@@ -1,0 +1,4 @@
+ALTER TABLE `contactus`
+  ADD COLUMN `phone` LONGTEXT NULL,
+  ADD COLUMN `address` LONGTEXT NULL,
+  ADD COLUMN `email` LONGTEXT NULL;

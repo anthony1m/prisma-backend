@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { imageURL, pageId, text } = require("../utils/request");
 
 function createError(message, statusCode) {
@@ -48,7 +49,12 @@ async function upsertTeamMember(req, res) {
   res.status(201).json(item);
 }
 
+function deleteTeamMember(req, res) {
+  return deleteById(req, res, sectionService.deleteTeamMember, "team member");
+}
+
 module.exports = {
+  deleteTeamMember,
   listTeamMembers,
   upsertTeamMember,
 };

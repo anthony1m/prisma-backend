@@ -14,6 +14,7 @@ router.use("/navigationbar", require("./navigationbar.routes"));
 router.use("/group-missions", require("./groupMission.routes"));
 router.use("/home-footer", require("./homeFooter.routes"));
 router.use("/team-members", require("./teamMember.routes"));
+router.use("/about-us", require("./aboutUs.routes"));
 router.use("/about-us-banners", require("./aboutUsBanner.routes"));
 router.use("/the-expansions", require("./theExpansion.routes"));
 router.use("/our-values", require("./ourValues.routes"));

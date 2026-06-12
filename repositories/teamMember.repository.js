@@ -1,6 +1,13 @@
 const prisma = require("../utils/prisma");
 const { cacheKey, rememberJson } = require("../utils/cache");
-const { invalidateTeamMembersCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAfter,
+  invalidateHomeCache,
+  invalidatePagesCache,
+  invalidateSearchCache,
+  invalidateTeamMembersCache,
+  invalidateTeamMembersCacheAfter,
+} = require("../utils/contentCache");
 
 async function listTeamMembers({ page = 1, limit = 10, pageId } = {}) {
   return rememberJson(
@@ -58,7 +65,22 @@ function upsertTeamMember(data) {
   );
 }
 
+function deleteTeamMember(id) {
+  return invalidateAfter(
+    prisma.hometeammember.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateTeamMembersCache,
+    invalidateHomeCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteTeamMember,
   listTeamMembers,
   upsertTeamMember,
 };

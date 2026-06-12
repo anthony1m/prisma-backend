@@ -1,8 +1,11 @@
 const prisma = require("../utils/prisma");
 const { cacheKey, rememberJson } = require("../utils/cache");
 const {
+  invalidateAfter,
   invalidateContactUsCache,
   invalidateContactUsCacheAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
 } = require("../utils/contentCache");
 
 function getContactUsPage() {
@@ -24,6 +27,17 @@ function getContactUsPage() {
 }
 
 function upsertContactUs(data) {
+  const updateData = {
+    description: data.description,
+    phone: data.phone,
+    address: data.address,
+    email: data.email,
+  };
+
+  if (data.imageURL !== null && data.imageURL !== undefined) {
+    updateData.imageURL = data.imageURL;
+  }
+
   return invalidateContactUsCacheAfter(
     prisma.contactus.upsert({
       where: {
@@ -32,10 +46,7 @@ function upsertContactUs(data) {
           title: data.title,
         },
       },
-      update: {
-        description: data.description,
-        imageURL: data.imageURL,
-      },
+      update: updateData,
       create: data,
     })
   );
@@ -75,6 +86,17 @@ async function upsertContactUsNamedSection(title, data) {
     },
   });
 
+  const updateData = {
+    description: data.description,
+    phone: data.phone,
+    address: data.address,
+    email: data.email,
+  };
+
+  if (data.imageURL !== null && data.imageURL !== undefined) {
+    updateData.imageURL = data.imageURL;
+  }
+
   const item = await prisma.contactus.upsert({
     where: {
       pageId_title: {
@@ -82,13 +104,13 @@ async function upsertContactUsNamedSection(title, data) {
         title,
       },
     },
-    update: {
-      description: data.description,
-      imageURL: data.imageURL,
-    },
+    update: updateData,
     create: {
       title,
       description: data.description,
+      phone: data.phone,
+      address: data.address,
+      email: data.email,
       imageURL: data.imageURL,
       pageId: page.id,
     },
@@ -97,6 +119,33 @@ async function upsertContactUsNamedSection(title, data) {
   await invalidateContactUsCache();
 
   return item;
+}
+
+function deleteContactUs(id) {
+  return invalidateAfter(
+    prisma.contactus.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateContactUsCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
+function deleteContactUsNamedSection(title, id) {
+  return invalidateAfter(
+    prisma.contactus.deleteMany({
+      where: {
+        id,
+        title,
+      },
+    }),
+    invalidateContactUsCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
 }
 
 function listContactUsSections(pageId) {
@@ -115,6 +164,8 @@ function listContactUsSections(pageId) {
 }
 
 module.exports = {
+  deleteContactUs,
+  deleteContactUsNamedSection,
   getContactUsNamedSection,
   getContactUsPage,
   listContactUsSections,

@@ -35,12 +35,18 @@ const upsertContactUsMainBannerSchema = z.object({
 const upsertContactUsSchema = z.object({
   title: requiredText("title"),
   description: optionalText(),
+  phone: optionalText(),
+  address: optionalText(),
+  email: optionalText(),
   pageId,
   imageURL,
 });
 
 const upsertContactUsLocationSchema = z.object({
-  description: requiredText("description"),
+  description: optionalText(),
+  phone: optionalText(),
+  address: optionalText(),
+  email: optionalText(),
   imageURL,
 });
 
@@ -57,6 +63,28 @@ const upsertOurValueSchema = z.object({
   title: requiredText("title"),
   description: optionalText(),
   pageId,
+});
+
+const optionalId = z.preprocess(
+  (value) => {
+    if (value === undefined || value === null || String(value).trim() === "") {
+      return undefined;
+    }
+
+    return String(value).trim();
+  },
+  z
+    .string()
+    .regex(/^[1-9]\d*$/, "id must be a positive number.")
+    .transform(Number)
+    .optional()
+);
+
+const upsertStrategicObjectiveSchema = z.object({
+  id: optionalId,
+  description: requiredText("description"),
+  pageId,
+  imageURL,
 });
 
 const upsertWhoWeAreSchema = z.object({
@@ -77,5 +105,6 @@ module.exports = {
   upsertMainBannerSchema,
   upsertNavigationbarSchema,
   upsertOurValueSchema,
+  upsertStrategicObjectiveSchema,
   upsertWhoWeAreSchema,
 };

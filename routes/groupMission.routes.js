@@ -15,4 +15,6 @@ router.post(
   asyncRoute(groupMissionController.upsertGroupMission)
 );
 
+router.delete("/:id", asyncRoute(groupMissionController.deleteGroupMission));
+
 module.exports = router;

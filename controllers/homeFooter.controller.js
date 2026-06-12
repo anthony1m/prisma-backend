@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { imageURL, text } = require("../utils/request");
 
 async function getHomeFooter(req, res) {
@@ -16,7 +17,12 @@ async function upsertHomeFooter(req, res) {
   res.status(201).json(item);
 }
 
+function deleteHomeFooter(req, res) {
+  return deleteById(req, res, sectionService.deleteHomeFooter, "home footer");
+}
+
 module.exports = {
+  deleteHomeFooter,
   getHomeFooter,
   upsertHomeFooter,
 };

@@ -1,6 +1,10 @@
 const prisma = require("../utils/prisma");
 const { rememberJson } = require("../utils/cache");
-const { invalidateContactUsCache } = require("../utils/contentCache");
+const {
+  invalidateContactUsCache,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 async function getContactUsMainBanner() {
   return rememberJson("contact-us:main-banner", async () => {
@@ -50,7 +54,40 @@ async function upsertContactUsMainBanner(data) {
   return item;
 }
 
+async function deleteContactUsMainBanner(id) {
+  const page = await prisma.page.findUnique({
+    where: {
+      title: "Contact Us",
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!page) {
+    return {
+      count: 0,
+    };
+  }
+
+  const result = await prisma.mainbanner.deleteMany({
+    where: {
+      id,
+      pageId: page.id,
+    },
+  });
+
+  await Promise.all([
+    invalidateContactUsCache(),
+    invalidatePagesCache(),
+    invalidateSearchCache(),
+  ]);
+
+  return result;
+}
+
 module.exports = {
+  deleteContactUsMainBanner,
   getContactUsMainBanner,
   upsertContactUsMainBanner,
 };

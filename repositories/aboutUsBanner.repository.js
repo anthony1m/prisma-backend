@@ -1,6 +1,12 @@
 const prisma = require("../utils/prisma");
 const { rememberJson } = require("../utils/cache");
-const { invalidateAboutUsCacheAfter } = require("../utils/contentCache");
+const {
+  invalidateAboutUsCache,
+  invalidateAboutUsCacheAfter,
+  invalidateAfter,
+  invalidatePagesCache,
+  invalidateSearchCache,
+} = require("../utils/contentCache");
 
 function getAboutUsBanner() {
   return rememberJson("about-us:banner", () =>
@@ -27,7 +33,21 @@ function upsertAboutUsBanner(data) {
   );
 }
 
+function deleteAboutUsBanner(id) {
+  return invalidateAfter(
+    prisma.aboutusbanner.deleteMany({
+      where: {
+        id,
+      },
+    }),
+    invalidateAboutUsCache,
+    invalidatePagesCache,
+    invalidateSearchCache
+  );
+}
+
 module.exports = {
+  deleteAboutUsBanner,
   getAboutUsBanner,
   upsertAboutUsBanner,
 };

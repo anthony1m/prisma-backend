@@ -14,4 +14,6 @@ router.post(
   asyncRoute(homeFooterController.upsertHomeFooter)
 );
 
+router.delete("/:id", asyncRoute(homeFooterController.deleteHomeFooter));
+
 module.exports = router;

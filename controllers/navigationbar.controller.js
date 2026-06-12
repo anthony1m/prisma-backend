@@ -1,4 +1,5 @@
 const sectionService = require("../services/section.service");
+const { deleteById } = require("../utils/http");
 const { imageURL, text } = require("../utils/request");
 
 async function getNavigationbar(req, res) {
@@ -15,7 +16,12 @@ async function upsertNavigationbar(req, res) {
   res.status(201).json(item);
 }
 
+function deleteNavigationbar(req, res) {
+  return deleteById(req, res, sectionService.deleteNavigationbar, "navigationbar");
+}
+
 module.exports = {
+  deleteNavigationbar,
   getNavigationbar,
   upsertNavigationbar,
 };

@@ -15,4 +15,9 @@ router.post(
   asyncRoute(singaporeLeadershipController.upsertSingaporeLeadership)
 );
 
+router.delete(
+  "/:id",
+  asyncRoute(singaporeLeadershipController.deleteSingaporeLeadership)
+);
+
 module.exports = router;

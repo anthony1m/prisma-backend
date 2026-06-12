@@ -5,14 +5,21 @@ const validate = require("../middlewares/validate.middleware");
 const asyncRoute = require("../utils/asyncRoute");
 const { upload } = require("../utils/upload");
 const {
-  titleDescriptionPageImageSchema,
+  upsertStrategicObjectiveSchema,
 } = require("../validations/section.validation");
+
+router.get("/", asyncRoute(strategicObjectivesController.listStrategicObjectives));
 
 router.post(
   "/",
   upload.single("image"),
-  validate(titleDescriptionPageImageSchema),
+  validate(upsertStrategicObjectiveSchema),
   asyncRoute(strategicObjectivesController.upsertStrategicObjective)
+);
+
+router.delete(
+  "/:id",
+  asyncRoute(strategicObjectivesController.deleteStrategicObjective)
 );
 
 module.exports = router;

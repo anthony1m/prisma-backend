@@ -15,5 +15,8 @@ router.post(
   validate(titleDescriptionPageImageSchema),
   asyncRoute(theExpansionController.upsertTheExpansion)
 );
-
+router.delete(
+  "/:id",
+  asyncRoute(theExpansionController.deleteTheExpansion)
+);
 module.exports = router;

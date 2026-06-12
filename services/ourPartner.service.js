@@ -45,7 +45,27 @@ function upsertOurPartnerOtherPartners(data) {
   });
 }
 
+function deleteOurPartnerMainBanner(id) {
+  return ourPartnerRepository.deleteOurPartnerMainBanner(id);
+}
+
+function deleteOurPartnerBankPartners(id) {
+  return ourPartnerRepository.deleteOurPartnerBankPartners(id);
+}
+
+function deleteOurPartnerOtherPartners(id) {
+  return ourPartnerRepository.deleteOurPartnerOtherPartners(id);
+}
+
+function deleteOurPartnerSection(section, id) {
+  return ourPartnerRepository.deleteOurPartnerSection(section, id);
+}
+
 module.exports = {
+  deleteOurPartnerBankPartners,
+  deleteOurPartnerMainBanner,
+  deleteOurPartnerOtherPartners,
+  deleteOurPartnerSection,
   getOurPartnerPage,
   getOurPartnerBankPartners,
   getOurPartnerMainBanner,
